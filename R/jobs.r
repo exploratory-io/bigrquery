@@ -77,6 +77,52 @@ insert_query_job <- function(query, project, destination_table = NULL,
   bq_post(url, body)
 }
 
+#' Create a new extract job.
+#'
+#' This is a low-level function that creates a extract job. To wait until it is
+#' finished and then retrieve the results, see \code{\link{query_exec}}
+#'
+#' @param project project name
+#' @param dataset
+#' @param table
+#' @param extract_uris
+#' @param print_header
+#' @param field_delimiter
+#' @param destination_format
+#' @param compression
+#' @family jobs
+#' @return a job resource list, as documented at
+#'   \url{https://developers.google.com/bigquery/docs/reference/v2/jobs}
+#' @seealso API documentation for insert method:
+#'   \url{https://developers.google.com/bigquery/docs/reference/v2/jobs/insert}
+#' @export
+insert_extract_job <- function(project, dataset, table, extract_uris,
+                               print_header=TRUE, field_delimiter=",", destination_format="CSV", compression="GZIP" ) {
+
+  assert_that(is.string(project), is.string(dataset), is.string(table))
+
+  url <- sprintf("projects/%s/jobs", project)
+  body <- list(
+    configuration = list(
+      extract = list(
+        fieldDelimiter = field_delimiter,
+        compression = compression,
+        destinationFormat = destination_format,
+        destinationUris = extract_uris,
+        printHeader = print_header,
+        sourceTable = list(
+          datasetId = dataset,
+          projectId = project,
+          tableId = table
+        )
+      )
+    )
+  )
+
+  bq_post(url, body)
+}
+
+
 #' Check status of a job.
 #'
 #' @param project project name
