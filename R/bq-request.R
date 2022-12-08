@@ -176,7 +176,8 @@ process_request <- function(req, raw = FALSE) {
   if (raw) {
     content
   } else {
-    jsonlite::fromJSON(rawToChar(content), simplifyVector = FALSE)
+    # To avoid garbling under LC_CTYPE locale other than UTF-8, use stri_encode rather than rawToChar.
+    jsonlite::fromJSON(stringi::stri_encode(content, from = "UTF-8", to = "UTF-8"), simplifyVector = FALSE)
   }
 }
 
