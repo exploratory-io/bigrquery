@@ -34,7 +34,7 @@ Imports:
     progress,
     Rcpp,
     rlang (>= 0.4.9),
-    stringi
+    stringi,
     tibble
 Suggests: 
     blob,
