@@ -146,7 +146,16 @@ bq_token <- function() {
   if (!bq_has_token()) {
     bq_auth()
   }
-  httr::config(token = .auth$cred)
+  cred <- .auth$cred
+  # Exploratory fork: bypass httr's auto-refresh by sending the access token
+  # as a static Bearer header. OAuth refresh is handled server-side by Exploratory.
+  if (inherits(cred, "Token2.0") && !is.null(cred$credentials$access_token)) {
+    httr::add_headers(
+      Authorization = paste("Bearer", cred$credentials$access_token)
+    )
+  } else {
+    httr::config(token = cred)
+  }
 }
 
 #' Is there a token on hand?
